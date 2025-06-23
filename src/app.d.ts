@@ -7,6 +7,11 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
+	const envConfig: Config;
 }
+
+type Config = {
+  DISCLAIMER_TEXT: boolean;
+};
 
 export {};

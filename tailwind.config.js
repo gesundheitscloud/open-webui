@@ -39,5 +39,13 @@ export default {
 			}
 		}
 	},
-	plugins: [typography, containerQuries]
+	plugins: [typography, containerQuries],
+	purge: {
+		safelist: [
+			'list-decimal',
+			'list-position-inside',
+			'm-4',
+			'ml-4',
+		]
+	}
 };
