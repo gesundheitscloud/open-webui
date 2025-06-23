@@ -47,6 +47,7 @@ class User(Base):
 
     updated_at = Column(BigInteger)
     created_at = Column(BigInteger)
+    accepted_at = Column(BigInteger, nullable=True)
 
 
 class UserSettings(BaseModel):
@@ -78,6 +79,7 @@ class UserModel(BaseModel):
     last_active_at: int  # timestamp in epoch
     updated_at: int  # timestamp in epoch
     created_at: int  # timestamp in epoch
+    accepted_at: Optional[int] = None # timestamp in epoch
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -353,6 +355,19 @@ class UsersTable:
             with get_db() as db:
                 db.query(User).filter_by(id=id).update(
                     {"last_active_at": int(time.time())}
+                )
+                db.commit()
+
+                user = db.query(User).filter_by(id=id).first()
+                return UserModel.model_validate(user)
+        except Exception:
+            return None
+
+    def update_user_accepted_at_by_id(self, id: str) -> Optional[UserModel]:
+        try:
+            with get_db() as db:
+                db.query(User).filter_by(id=id).update(
+                    {"accepted_at": int(time.time())}
                 )
                 db.commit()
 
