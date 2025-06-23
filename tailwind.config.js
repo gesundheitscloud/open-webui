@@ -39,5 +39,15 @@ export default {
 			}
 		}
 	},
-	plugins: [typography, containerQuries]
+	plugins: [typography, containerQuries],
+	purge: {
+		safelist: [
+			'list-disc',
+			'list-inside',
+			'max-w-4xl',
+			'ml-4',
+			'text-blue-600',
+			'dark:text-blue-500'
+		]
+	}
 };
