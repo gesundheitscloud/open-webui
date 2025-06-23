@@ -547,3 +547,28 @@ async def delete_user_by_id(user_id: str, user=Depends(get_admin_user)):
 @router.get("/{user_id}/groups")
 async def get_user_groups_by_id(user_id: str, user=Depends(get_admin_user)):
     return Groups.get_groups_by_member_id(user_id)
+
+############################
+# Set user Accepted
+############################
+
+
+@router.post("/accept", response_model=Optional[UserModel])
+async def user_accept_by_id(
+    session_user=Depends(get_verified_user),
+):
+    if session_user:
+        updated_user = Users.update_user_accepted_at_by_id(session_user.id)
+
+        if updated_user:
+            return updated_user
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERROR_MESSAGES.DEFAULT(),
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=ERROR_MESSAGES.USER_NOT_FOUND,
+    )

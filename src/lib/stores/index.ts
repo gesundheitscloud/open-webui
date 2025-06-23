@@ -284,4 +284,5 @@ type SessionUser = {
 	name: string;
 	role: string;
 	profile_image_url: string;
+	accepted_at?: number;
 };

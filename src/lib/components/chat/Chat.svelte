@@ -62,7 +62,7 @@
 	} from '$lib/apis/chats';
 	import { generateOpenAIChatCompletion } from '$lib/apis/openai';
 	import { processWeb, processWebSearch, processYoutubeVideo } from '$lib/apis/retrieval';
-	import { getAndUpdateUserLocation, getUserSettings } from '$lib/apis/users';
+	import { getAndUpdateUserLocation, getUserSettings, setUserHasAccepted } from '$lib/apis/users';
 	import {
 		chatCompleted,
 		generateQueries,
@@ -2224,6 +2224,42 @@
 			toast.error($i18n.t('Failed to move chat'));
 		}
 	};
+
+	const recentlyAccepted = (accepted_at?: number): boolean => {
+		if(!accepted_at){
+			return false
+		}
+
+		// python uses seconds since epoch, so we need to convert to s
+		const nowInS = new Date().getTime()/1000;
+		const dayInS = 60 * 60 * 24
+		// counts as accepted when accpted within the last 24 hours
+		if(nowInS - dayInS < accepted_at && accepted_at < nowInS) {
+			return true
+		}
+
+		return false
+	}
+
+	let hasAccepted: boolean;
+	$: hasAccepted = recentlyAccepted($user?.accepted_at)
+
+	const acceptHanlder = async () => {
+		if($user){
+			const res = await setUserHasAccepted(localStorage.token).catch((error) => {
+				toast.error(`${error}`);
+			});
+
+			if (res) {
+				await user.set({...$user, accepted_at: new Date().getTime()});
+				hasAccepted = true
+			}
+		}
+	};
+
+	const disclaimerText = () => {
+		return envConfig.DISCLAIMER_TEXT
+	}
 </script>
 
 <svelte:head>
@@ -2262,6 +2298,19 @@
 	id="chat-container"
 >
 	{#if !loading}
+		{#if !hasAccepted}
+		<div class="flex flex-col px-[5%] pt-[30px] pb-[10px] gap-y-6 items-center">
+			<div>{@html disclaimerText()}</div>
+			<button
+				class="flex-inital px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+				on:click={() => {
+					acceptHanlder();
+				}}
+			>
+				Accept
+			</button>
+		</div>
+		{:else}
 		<div in:fade={{ duration: 50 }} class="w-full h-full flex flex-col">
 			{#if $selectedFolder && $selectedFolder?.meta?.background_image_url}
 				<div
@@ -2435,7 +2484,7 @@
 								<div
 									class="absolute bottom-1 text-xs text-gray-500 text-center line-clamp-1 right-0 left-0"
 								>
-									<!-- {$i18n.t('LLMs can make mistakes. Verify important information.')} -->
+									{$i18n.t('LLMs can make mistakes. Verify important information.')}
 								</div>
 							</div>
 						{:else}
@@ -2508,6 +2557,7 @@
 				/>
 			</PaneGroup>
 		</div>
+		{/if}
 	{:else if loading}
 		<div class=" flex items-center justify-center h-full w-full">
 			<div class="m-auto">
