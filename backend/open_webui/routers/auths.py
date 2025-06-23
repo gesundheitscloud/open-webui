@@ -93,6 +93,7 @@ signin_rate_limiter = RateLimiter(
 
 
 class SessionUserResponse(Token, UserProfileImageResponse):
+    accepted_at: Optional[int] = None
     expires_at: Optional[int] = None
     permissions: Optional[dict] = None
 
@@ -158,6 +159,7 @@ async def get_session_user(
         "status_message": user.status_message,
         "status_expires_at": user.status_expires_at,
         "permissions": user_permissions,
+        "accepted_at": user.accepted_at,
     }
 
 
