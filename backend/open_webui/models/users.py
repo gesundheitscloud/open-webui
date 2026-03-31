@@ -6,7 +6,7 @@ import datetime
 import time
 from typing import Optional
 from open_webui.env import DATABASE_USER_ACTIVE_STATUS_UPDATE_INTERVAL
-from open_webui.internal.db import Base, JSONField, get_async_db_context
+from open_webui.internal.db import Base, JSONField, get_async_db, get_async_db_context
 from open_webui.utils.misc import throttle
 from open_webui.utils.validate import validate_profile_image_url
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
@@ -77,6 +77,7 @@ class User(Base):  # identity & profile
     last_active_at = Column(BigInteger)
     updated_at = Column(BigInteger)
     created_at = Column(BigInteger)
+    accepted_at = Column(BigInteger, nullable=True)
 
 
 _DEFAULT_PROFILE_IMAGE_URL = '/api/v1/users/{user_id}/profile/image'
@@ -113,6 +114,7 @@ class UserModel(BaseModel):
     last_active_at: int  # timestamp in epoch
     updated_at: int  # timestamp in epoch
     created_at: int  # timestamp in epoch
+    accepted_at: Optional[int] = None # timestamp in epoch
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -645,6 +647,19 @@ class UsersTable:
             await session.commit()
             await session.refresh(user)
             return UserModel.model_validate(user)
+        
+    async def update_user_accepted_at_by_id(self, id: str) -> UserModel | None:
+        try:
+            async with get_async_db() as db:
+                user = await db.get(User, id)
+                if not user:
+                    return None
+                user.accepted_at = int(time.time())
+                await db.commit()
+                await db.refresh(user)
+                return UserModel.model_validate(user)
+        except Exception:
+            return None
 
     async def update_user_scim_by_id(
         self,

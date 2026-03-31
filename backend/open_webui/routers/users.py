@@ -843,3 +843,28 @@ async def get_user_preview(
             'total': len(all_tools),
         },
     }
+
+
+############################
+# Set user Accepted
+############################
+
+
+@router.post('/accept', response_model=UserModel | None)
+async def user_accept_by_id(
+    session_user: UserModel =Depends(get_verified_user),
+):
+    if session_user:
+        updated_user = await Users.update_user_accepted_at_by_id(session_user.id)
+        if updated_user:
+            return updated_user
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ERROR_MESSAGES.DEFAULT(),
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=ERROR_MESSAGES.USER_NOT_FOUND,
+    )

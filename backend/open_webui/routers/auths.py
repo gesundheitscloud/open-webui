@@ -212,6 +212,7 @@ async def create_session_response(
 
 
 class SessionUserResponse(Token, UserProfileImageResponse):
+    accepted_at: int | None = None
     expires_at: int | None = None
     permissions: dict | None = None
 
@@ -282,6 +283,7 @@ async def get_session_user(
         'status_message': user.status_message,
         'status_expires_at': user.status_expires_at,
         'permissions': user_permissions,
+        'accepted_at': user.accepted_at,
     }
 
     return response_data
