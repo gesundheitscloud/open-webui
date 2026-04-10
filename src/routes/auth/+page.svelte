@@ -6,6 +6,7 @@
 
 	import { onMount, getContext, tick } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 
 	import { getBackendConfig } from '$lib/apis';
@@ -255,10 +256,13 @@
 						</div>
 					</div>
 				{:else}
-					<div class="my-auto flex flex-col justify-center items-center">
-						<div id="auth-login-card" class=" sm:max-w-md my-auto pb-10 w-full dark:text-gray-100">
+					<div class="my-auto flex flex-col justify-center items-center w-full">
+						<div
+							id="auth-login-card"
+							class="w-full max-w-2xl mx-auto mb-8 text-center space-y-3 dark:text-gray-100"
+						>
 							{#if $config?.metadata?.auth_logo_position === 'center'}
-								<div class="flex justify-center mb-6">
+								<div class="flex justify-center mb-5">
 									<img
 										id="logo"
 										crossorigin="anonymous"
@@ -268,6 +272,26 @@
 									/>
 								</div>
 							{/if}
+							<p class="text-lg sm:text-xl font-normal text-black dark:text-gray-200">
+								Introducing AIR·MS
+							</p>
+							<p
+								class="text-3xl sm:text-4xl font-medium leading-tight flex flex-wrap justify-center items-baseline gap-x-3 sm:gap-x-4 gap-y-1"
+							>
+								<span class="text-[#499fe8]">AI</span>
+								<span class="text-[#0b1860] dark:text-gray-100">Agent</span>
+							</p>
+							<div
+								class="text-sm sm:text-[0.9375rem] text-[#595757] dark:text-gray-400 leading-relaxed space-y-2.5 px-1 text-pretty"
+							>
+								<p>
+									The AIR·MS AI Agent is a large language model running on&nbsp;Minerva, Mount
+									Sinai's supercomputer.
+								</p>
+								<p>We're in the process of adding functionality, so check back&nbsp;soon.</p>
+							</div>
+						</div>
+						<div class=" sm:max-w-md my-auto pb-10 w-full dark:text-gray-100">
 							<form
 								class=" flex flex-col justify-center"
 								on:submit={(e) => {
@@ -575,6 +599,76 @@
 								</div>
 							{/if}
 
+							<div
+								class="mt-10 pt-8 w-full border-t border-gray-700/10 dark:border-gray-100/10 flex items-center justify-center gap-1 sm:gap-2"
+							>
+								<div
+									class="flex flex-1 min-w-0 max-w-[32%] sm:max-w-none justify-center items-center h-10 sm:h-11"
+								>
+									<img
+										src="{base}/static/auth/logo-mount-sinai.svg"
+										class="h-full w-full object-contain object-center dark:hidden"
+										alt="Icahn School of Medicine at Mount Sinai"
+									/>
+									<img
+										src="{base}/static/auth/logo-mount-sinai-dark.svg"
+										class="h-full w-full object-contain object-center hidden dark:block"
+										alt="Icahn School of Medicine at Mount Sinai"
+									/>
+								</div>
+								<div
+									class="h-10 sm:h-12 w-px shrink-0 bg-gray-700/10 dark:bg-gray-100/10"
+								></div>
+								<div
+									class="flex flex-1 min-w-0 max-w-[18%] sm:max-w-[4.5rem] justify-center items-center h-10 sm:h-11 aspect-square"
+								>
+									<img
+										src="{base}/static/auth/logo-hpims.svg"
+										class="h-full w-full object-contain object-center dark:hidden"
+										alt="HPI·MS"
+									/>
+									<img
+										src="{base}/static/auth/logo-hpims-dark.svg"
+										class="h-full w-full object-contain object-center hidden dark:block"
+										alt="HPI·MS"
+									/>
+								</div>
+								<div
+									class="h-10 sm:h-12 w-px shrink-0 bg-gray-700/10 dark:bg-gray-100/10"
+								></div>
+								<div
+									class="flex flex-1 min-w-0 max-w-[22%] sm:max-w-[5.25rem] justify-center items-center h-11 sm:h-12 aspect-[66/52]"
+								>
+									<img
+										src="{base}/static/auth/logo-data4life.svg"
+										class="h-full w-full object-contain object-center dark:hidden"
+										alt="data4life"
+									/>
+									<img
+										src="{base}/static/auth/logo-data4life-dark.svg"
+										class="h-full w-full object-contain object-center hidden dark:block"
+										alt="data4life"
+									/>
+								</div>
+								<div
+									class="h-10 sm:h-12 w-px shrink-0 bg-gray-700/10 dark:bg-gray-100/10"
+								></div>
+								<div
+									class="flex flex-1 min-w-0 max-w-[28%] sm:max-w-[7.5rem] justify-center items-center h-10 sm:h-11 aspect-[118/55]"
+								>
+									<img
+										src="{base}/static/auth/logo-hpi.svg"
+										class="h-full w-full object-contain object-center dark:hidden"
+										alt="Hasso Plattner Institut"
+									/>
+									<img
+										src="{base}/static/auth/logo-hpi-dark.svg"
+										class="h-full w-full object-contain object-center hidden dark:block"
+										alt="Hasso Plattner Institut"
+									/>
+								</div>
+							</div>
+
 							{#if $config?.features.enable_ldap && $config?.features.enable_login_form}
 								<div class="mt-2">
 									<button
@@ -594,14 +688,14 @@
 									</button>
 								</div>
 							{/if}
-						</div>
-						{#if $config?.metadata?.login_footer}
-							<div class="max-w-3xl mx-auto">
-								<div class="mt-2 text-[0.7rem] text-gray-500 dark:text-gray-400 marked">
-									{@html DOMPurify.sanitize(marked($config?.metadata?.login_footer))}
+							{#if $config?.metadata?.login_footer}
+								<div class="max-w-3xl mx-auto">
+									<div class="mt-2 text-[0.7rem] text-gray-500 dark:text-gray-400 marked">
+										{@html DOMPurify.sanitize(marked($config?.metadata?.login_footer))}
+									</div>
 								</div>
-							</div>
-						{/if}
+							{/if}
+						</div>
 					</div>
 				{/if}
 			</div>
