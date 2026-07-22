@@ -203,6 +203,7 @@ async def create_session_response(
         'role': user.role,
         'profile_image_url': f'/api/v1/users/{user.id}/profile/image',
         'permissions': user_permissions,
+        'accepted_at': user.accepted_at,
     }
 
 
