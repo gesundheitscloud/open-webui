@@ -3691,8 +3691,8 @@
 			});
 
 			if (res) {
-				await user.set({...$user, accepted_at: new Date().getTime()});
-				hasAccepted = true
+				const nowInSeconds = Math.floor(Date.now() / 1000);
+				await user.set({ ...$user, accepted_at: nowInSeconds });
 			}
 		}
 	};
