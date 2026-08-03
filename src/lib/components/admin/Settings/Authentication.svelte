@@ -608,7 +608,9 @@
 					<div class="grid grid-cols-1 gap-x-3 gap-y-2.5 sm:grid-cols-2">
 						<AdminSettingField
 							label={$i18n.t('Email Claim')}
-							description={$i18n.t('Claim used as the user email address.')}
+							description={$i18n.t(
+								'Claim used as the user email address. Provide a comma-separated list to try multiple claims in order (e.g. "email,preferred_username" for Azure AD).'
+							)}
 						>
 							<input
 								class={inputClass}

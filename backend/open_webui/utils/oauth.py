@@ -180,6 +180,22 @@ def _default_value(value):
     return getattr(value, 'value', value)
 
 
+def _as_claim_list(claim_config) -> list[str]:
+    if isinstance(claim_config, str):
+        return [claim_config] if claim_config else []
+    return list(claim_config or [])
+
+
+def _resolve_claim_value(user_data: dict, claim_config) -> str | None:
+    """Return the first non-empty value from user_data, trying each configured
+    claim name in order (e.g. Azure's ["email", "preferred_username"])."""
+    for claim in _as_claim_list(claim_config):
+        value = user_data.get(claim)
+        if value:
+            return value
+    return None
+
+
 async def get_oauth_runtime_config() -> SimpleNamespace:
     keys = [key for key, _default in OAUTH_RUNTIME_CONFIG.values()]
     stored = await Config.get_many(*keys)
@@ -1807,7 +1823,7 @@ class OAuthManager:
             id_token_claims = dict(user_data) if user_data else {}
             if (
                 (not user_data)
-                or (auth_config.OAUTH_EMAIL_CLAIM not in user_data)
+                or not any(claim in user_data for claim in _as_claim_list(auth_config.OAUTH_EMAIL_CLAIM))
                 or (auth_config.OAUTH_USERNAME_CLAIM not in user_data)
             ):
                 user_data: UserInfo = await client.userinfo(token=token)
@@ -1840,7 +1856,7 @@ class OAuthManager:
 
             # Email extraction
             email_claim = auth_config.OAUTH_EMAIL_CLAIM
-            email = user_data.get(email_claim, '')
+            email = _resolve_claim_value(user_data, email_claim) or ''
             # We currently mandate that email addresses are provided
             if not email:
                 # If the provider is GitHub,and public email is not provided, we can use the access token to fetch the user's email
@@ -1918,7 +1934,7 @@ class OAuthManager:
                 if auth_config.OAUTH_UPDATE_EMAIL_ON_LOGIN:
                     email_claim = auth_config.OAUTH_EMAIL_CLAIM
                     if email_claim:
-                        new_email = user_data.get(email_claim)
+                        new_email = _resolve_claim_value(user_data, email_claim)
                         if new_email and new_email.lower() != user.email.lower():
                             existing_user = await Users.get_user_by_email(new_email, db=db)
                             if existing_user:

@@ -2531,7 +2531,7 @@ OAUTH_USERNAME_CLAIM = os.getenv('OAUTH_USERNAME_CLAIM', 'name')
 
 OAUTH_PICTURE_CLAIM = os.getenv('OAUTH_PICTURE_CLAIM', 'picture')
 
-OAUTH_EMAIL_CLAIM = os.getenv('OAUTH_EMAIL_CLAIM', 'email')
+OAUTH_EMAIL_CLAIM = [claim.strip() for claim in os.getenv('OAUTH_EMAIL_CLAIM', 'email').split(',') if claim.strip()]
 
 OAUTH_GROUPS_CLAIM = os.getenv('OAUTH_GROUPS_CLAIM', os.getenv('OAUTH_GROUP_CLAIM', 'groups'))
 
